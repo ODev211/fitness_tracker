@@ -88,13 +88,13 @@ class Workouts:
             print("Not a valid option. Please try again.")
 
 
-# Project startup
+# Project startup      -  You can run the web gui from terminal with streamlit run app.py
 if __name__ == "__main__":
     # 1. Create the Manager
     my_app = FitnessTracker()
 
     # 2. The Manager creates and stores a Workout object
-    #my_app.log_workout("Swimming", 45, 300)
+    my_app.log_workout("Swimming", 45, 300)
 
     # 3. Inside view_history(), the Manager does this:
     for item in my_app.view_history:
