@@ -1,89 +1,99 @@
-# This is the main file where the fitness tracker will be run - Waterfall development approach
+class WorkoutSession:
+    def __init__(self, exercise, duration, distance):
+        self.exercise = exercise
+        self.duration = duration
+        self.distance = distance
 
-# Class for exercise
-class FitnessTracker:
-    def __init__(self):
-        self.analytics = []
-        self.summary = []
-        self.user_interface = []
-        self.validate_data = []
-        self.log_workout = []
-        self.view_history = []
 
-# Class for the main functions
-class Workouts:
+class FitnessManager:
     def __init__(self):
         self.history = []
 
-    # Log workouts function
+    @staticmethod
+    def validate_data(duration, distance):
+        try:
+            return float(duration) > 0 and float(distance) >= 0
+        except ValueError:
+            return False
+
     def log_workout(self, exercise, duration, distance):
-        pass
+        if self.validate_data(duration, distance):
+            new_session = WorkoutSession(exercise, float(duration), float(distance))
+            self.history.append(new_session)
+            return True
+        return False
 
-
-    # View workout history function
     def view_history(self):
-        pass
+        if not self.history:
+            print("\nNo workouts logged yet!")
+            return
 
+        print("\n--- Workout History ---")
+        for i, workout in enumerate(self.history, 1):
+            print(f"{i}. {workout.exercise}: {workout.duration} mins, {workout.distance} meters")
 
-    # Weekly / Monthly summary function
-    def summary(self):
-        pass
+    def get_summary(self):
+        total_dist = sum(item.distance for item in self.history)
+        total_time = sum(item.duration for item in self.history)
+        return f"\nSummary: {len(self.history)} workouts, {total_time} mins total, {total_dist}m total."
 
-
-    # Basic analytics function
     def analytics(self):
-        pass
+        if not self.history:
+            return "No data for analytics."
+        avg_dist = sum(item.distance for item in self.history) / len(self.history)
+        return f"Average distance per workout: {avg_dist:.2f}m"
 
 
-    # Data validation function
-    def validate_data(self):
-        pass
+class TUI:
+    def __init__(self, admin):
+        self.manager = admin
 
-
-    # Main user interface function
-    def user_interface(self):
-        # Layout of the tui
-        print("Welcome to FitnessX Tracker - Specialised in tracking your workouts!")
-        print("Please select an option:")
-        print("1. Log a new workout")
-        print("2. View your workout history")
-        print("3. View your weekly/monthly summary")
-        print("4. View your basic analytics")
-        print("5. Exit")
-
-        # Logic for handling user input and error handling
-        user_input = input("Enter your choice: ")
-
-        while user_input != int(user_input):
+    @staticmethod
+    def get_valid_input(prompt):
+        while True:
+            user_input = input(prompt)
+            if user_input.isdigit():
+                return int(user_input)
             print("Invalid input. Please enter a number.")
-            user_input = input("Enter your choice: ")
 
-        # User input after validation
-        user_choice = int(user_input)
-        if user_choice == 1:
-            print("Logging a new workout...")
-        elif user_choice == 2:
-            print("Viewing your workout history...")
-        elif user_choice == 3:
-            print("Viewing your weekly/monthly summary...")
-        elif user_choice == 4:
-            print("Viewing your basic analytics...")
-        elif user_choice == 5:
-            print("Exiting the application...")
-        else:
-            print("Not a valid option. Please try again.")
+    def run(self):
+        while True:  # Keep the app running until exit
+            print("\n--- FitnessX Tracker ---")
+            print("1. Log a new workout")
+            print("2. View your workout history")
+            print("3. View summary")
+            print("4. View analytics")
+            print("5. Exit")
+
+            user_choice = self.get_valid_input("Enter choice: ")
+
+            if user_choice == 1:
+                ex = input("Exercise name: ")
+                dur = input("Duration (mins): ")
+                dist = input("Distance (m): ")
+                if self.manager.log_workout(ex, dur, dist):
+                    print("Workout logged successfully!")
+                else:
+                    print("Error: Invalid duration or distance.")
+
+            elif user_choice == 2:
+                self.manager.view_history()
+
+            elif user_choice == 3:
+                print(self.manager.get_summary())
+
+            elif user_choice == 4:
+                print(self.manager.analytics())
+
+            elif user_choice == 5:
+                print("Exiting... Stay active!")
+                break
+            else:
+                print("Not a valid option.")
 
 
-
-# Project startup
 if __name__ == "__main__":
-    # 1. Create the Manager
-    my_app = FitnessTracker()
-
-    # 2. The Manager creates and stores a Workout object
-    my_app.log_workout("Swimming", 45, 300)
-
-    # 3. Inside view_history(), the Manager does this:
-    for item in my_app.view_history:
-        # 'item' is a Workout object. We access its attributes directly:
-        print(f"Activity: {item.exercise}")
+    # In Waterfall, we instantiate our 'Units' here
+    manager = FitnessManager()
+    app = TUI(manager)
+    app.run()
