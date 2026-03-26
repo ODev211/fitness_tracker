@@ -1,5 +1,7 @@
 # This is the main file where the fitness tracker will be run - Waterfall development approach
 
+acceptable_exercises = ['run', 'swimming', 'walk', 'jog']  # This can move! Just needed to have a list somewhere
+
 # Class for exercise
 class FitnessTracker:
     def __init__(self):
@@ -36,8 +38,20 @@ class Workouts:
 
 
     # Data validation function
-    def validate_data(self):
-        pass
+    def validate_data(self, data):
+        if type(data) == int:  # if input data is an int, only return true if it's 0 or higher
+            if data < 0:
+                return False
+            else:
+                return True
+
+        else:  # if input data is not an int (assumed string), only return true if it's in the accepted list
+            if data not in acceptable_exercises:
+                return False
+            else:
+                return True
+
+
 
 
     # Main user interface function
@@ -74,14 +88,13 @@ class Workouts:
             print("Not a valid option. Please try again.")
 
 
-
 # Project startup
 if __name__ == "__main__":
     # 1. Create the Manager
     my_app = FitnessTracker()
 
     # 2. The Manager creates and stores a Workout object
-    my_app.log_workout("Swimming", 45, 300)
+    #my_app.log_workout("Swimming", 45, 300)
 
     # 3. Inside view_history(), the Manager does this:
     for item in my_app.view_history:
